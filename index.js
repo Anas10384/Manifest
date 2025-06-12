@@ -2,8 +2,8 @@ const { exec } = require('child_process');
 const path = require('path');
 
 // Change this to your input URL or local file
-const inputURL = 'https://example.com/yourvideo.m3u8';
-const outputMPD = 'output/output.mpd';
+const inputURL = 'https://ts-j8bh.onrender.com/box.ts?id=4';
+const outputMPD = 'output/Tamil.mpd';
 
 const cmd = `ffmpeg -i "${inputURL}" -c:v copy -c:a copy -f dash -seg_duration 4 ${outputMPD}`;
 

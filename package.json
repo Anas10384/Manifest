@@ -1,0 +1,12 @@
+{
+  "name": "m3u8-to-mpd",
+  "version": "1.0.0",
+  "description": "Convert .m3u8 or .ts to .mpd using FFmpeg",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "chatgpt",
+  "license": "MIT",
+  "dependencies": {}
+}

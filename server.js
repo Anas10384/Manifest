@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Channel list
 const channels = {
   '1': 'http://exm3u.extraott.com:80/live/2249871453/1991220000/400159598.m3u8',
   '2': 'http://exm3u.extraott.com:80/live/2249871453/1991220000/401627870.m3u8',
@@ -16,7 +15,6 @@ const channels = {
   '6': 'http://exm3u.extraott.com:80/live/2249871453/1991220000/400157873.m3u8'
 };
 
-// Serve DASH output folder
 app.use('/dash', express.static(path.join(__dirname, 'dash')));
 
 app.get('/box.mpd', (req, res) => {
@@ -26,13 +24,13 @@ app.get('/box.mpd', (req, res) => {
   const streamUrl = channels[id];
   const outputDir = path.join(__dirname, 'dash');
 
-  // Clear old files
   fs.rmSync(outputDir, { recursive: true, force: true });
   fs.mkdirSync(outputDir);
 
-  // FFmpeg command to convert M3U8 to DASH (MPD)
   const ffmpeg = spawn('ffmpeg', [
-    '-i', streamUrl,
+    '-fflags', '+genpts',
+    '-analyzeduration', '10000000',
+    '-i', streamUrl, // ✅ fixed here
     '-c:v', 'copy',
     '-c:a', 'aac',
     '-f', 'dash',
@@ -41,12 +39,8 @@ app.get('/box.mpd', (req, res) => {
   ]);
 
   ffmpeg.stderr.on('data', data => console.error(`FFmpeg: ${data}`));
+  ffmpeg.on('close', code => console.log(`FFmpeg exited with code ${code}`));
 
-  ffmpeg.on('close', code => {
-    console.log(`FFmpeg exited with code ${code}`);
-  });
-
-  // Respond with .mpd path to play
   res.send(`<video controls autoplay src="/dash/stream.mpd" type="application/dash+xml"></video>`);
 });
 
